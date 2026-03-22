@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}{{ profile_user.username }} | MAXиколд{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-4">
+        <div class="card text-center">
+            <div class="card-body">
+                <img src="{{ url_for('static', filename='uploads/' + profile_user.avatar) }}" class="avatar mb-3" style="width: 120px; height: 120px;">
+                <h3>{{ profile_user.username }}</h3>
+                <p class="text-secondary">{{ profile_user.bio or "Пользователь пока ничего не рассказал о себе" }}</p>
+                <p class="small text-secondary">На сайте с {{ profile_user.created_at.strftime('%d.%m.%Y') }}</p>
+                {% if current_user.id == profile_user.id %}
+                <a href="{{ url_for('edit_profile') }}" class="btn btn-primary">Редактировать профиль</a>
+                {% endif %}
+                <a href="{{ url_for('private_chat', user_id=profile_user.id) }}" class="btn btn-outline mt-2">
+                    <i class="fas fa-envelope"></i> Написать сообщение
+                </a>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-8">
+        <h4 class="mb-3">Посты {{ profile_user.username }}</h4>
+        {% for post in posts %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <p>{{ post.content }}</p>
+                {% if post.image %}
+                <img src="{{ url_for('static', filename='uploads/' + post.image) }}" class="img-fluid rounded-3 mb-2" style="max-height: 300px;">
+                {% endif %}
+                <small class="text-secondary">{{ post.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

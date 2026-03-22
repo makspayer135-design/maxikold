@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block title %}Создать канал | MAXиколд{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mb-4"><i class="fas fa-bullhorn"></i> Создать канал</h4>
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">Название канала</label>
+                        <input type="text" name="name" class="form-control" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">@username (уникальный)</label>
+                        <input type="text" name="username" class="form-control" placeholder="например: maxikold_news" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Описание</label>
+                        <textarea name="description" class="form-control" rows="3"></textarea>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" name="is_private" class="form-check-input" id="privateCheck">
+                        <label class="form-check-label" for="privateCheck">Приватный канал (только по приглашениям)</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Создать канал</button>
+                    <a href="{{ url_for('channels') }}" class="btn btn-outline">Отмена</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

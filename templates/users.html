@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Пользователи | MAXиколд{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <h3 class="mb-4">Все пользователи</h3>
+        {% for user in users %}
+        <div class="card mb-2">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3">
+                    <img src="{{ url_for('static', filename='uploads/' + user.avatar) }}" class="avatar-sm">
+                    <div class="flex-grow-1">
+                        <h5 class="mb-0">{{ user.username }}</h5>
+                        <small class="text-secondary">На сайте с {{ user.created_at.strftime('%d.%m.%Y') }}</small>
+                    </div>
+                    <a href="{{ url_for('profile', username=user.username) }}" class="btn btn-primary btn-sm">Профиль</a>
+                    <a href="{{ url_for('private_chat', user_id=user.id) }}" class="btn btn-outline btn-sm">
+                        <i class="fas fa-envelope"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,105 @@
+{% extends "base.html" %}
+
+{% block title %}Чат | MAXиколд{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="chat-container">
+            <div class="chat-messages" id="chatMessages">
+                {% for message in messages %}
+                <div class="message {% if message.user_id == current_user.id %}own{% endif %}">
+                    {% if message.user_id != current_user.id %}
+                    <img src="{{ url_for('static', filename='uploads/' + message.user.avatar) }}" class="avatar-sm">
+                    {% endif %}
+                    <div class="message-bubble {% if message.user_id == current_user.id %}own{% endif %}">
+                        {% if message.user_id != current_user.id %}
+                        <div class="message-username">{{ message.user.username }}</div>
+                        {% endif %}
+                        <div>{{ message.content }}</div>
+                        <div class="message-time">{{ message.timestamp.strftime('%H:%M') }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <div class="chat-input">
+                <input type="text" id="messageInput" placeholder="Сообщение...">
+                <button class="btn btn-primary" id="sendBtn">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+const socket = io();
+const messagesDiv = document.getElementById('chatMessages');
+const messageInput = document.getElementById('messageInput');
+const sendBtn = document.getElementById('sendBtn');
+
+socket.emit('join', { room: 'global' });
+
+function scrollToBottom() {
+    messagesDiv.scrollTop = messagesDiv.scrollHeight;
+}
+scrollToBottom();
+
+socket.on('new_message', (data) => {
+    const isOwn = data.user_id === {{ current_user.id }};
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message ${isOwn ? 'own' : ''}`;
+    
+    if (!isOwn) {
+        messageDiv.innerHTML = `
+            <img src="/static/uploads/${data.avatar}" class="avatar-sm">
+            <div class="message-bubble">
+                <div class="message-username">${escapeHtml(data.username)}</div>
+                <div>${escapeHtml(data.message)}</div>
+                <div class="message-time">${data.timestamp}</div>
+            </div>
+        `;
+    } else {
+        messageDiv.innerHTML = `
+            <div class="message-bubble own">
+                <div>${escapeHtml(data.message)}</div>
+                <div class="message-time">${data.timestamp}</div>
+            </div>
+        `;
+    }
+    
+    messagesDiv.appendChild(messageDiv);
+    scrollToBottom();
+});
+
+socket.on('user_joined', (data) => {
+    const systemMsg = document.createElement('div');
+    systemMsg.className = 'text-center text-secondary small my-2';
+    systemMsg.innerHTML = `<i class="fas fa-user-plus"></i> ${escapeHtml(data.message)}`;
+    messagesDiv.appendChild(systemMsg);
+    scrollToBottom();
+    setTimeout(() => systemMsg.remove(), 3000);
+});
+
+function sendMessage() {
+    const message = messageInput.value.trim();
+    if (message) {
+        socket.emit('send_message', { message: message, room: 'global' });
+        messageInput.value = '';
+        messageInput.focus();
+    }
+}
+
+sendBtn.addEventListener('click', sendMessage);
+messageInput.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') sendMessage();
+});
+
+function escapeHtml(text) {
+    const div = document.createElement('div');
+    div.textContent = text;
+    return div.innerHTML;
+}
+</script>
+{% endblock %}

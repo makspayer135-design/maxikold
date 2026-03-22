@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+
+{% block title %}Каналы | MAXиколд{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+            <h3><i class="fas fa-bullhorn"></i> Каналы</h3>
+            <a href="{{ url_for('create_channel') }}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Создать канал
+            </a>
+        </div>
+        
+        {% if my_channels %}
+        <h5 class="mb-3">Мои каналы</h5>
+        {% for channel in my_channels %}
+        <a href="{{ url_for('channel_view', channel_id=channel.id) }}" class="text-decoration-none">
+            <div class="card mb-2 hover-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="fas fa-bullhorn fa-2x" style="color: #00A3FF;"></i>
+                        <div>
+                            <strong>{{ channel.name }}</strong>
+                            <div class="small text-secondary">@{{ channel.username }}</div>
+                        </div>
+                        <div class="ms-auto">
+                            <span class="badge bg-secondary">{{ channel.subscribers|length }} подписчиков</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+        {% endif %}
+        
+        {% if subscribed_channels %}
+        <h5 class="mb-3 mt-4">Мои подписки</h5>
+        {% for channel in subscribed_channels %}
+        <a href="{{ url_for('channel_view', channel_id=channel.id) }}" class="text-decoration-none">
+            <div class="card mb-2 hover-card">
+                <div class="card-body">
+                    <div class="d-flex align-items-center gap-3">
+                        <i class="fas fa-bullhorn fa-2x" style="color: #00A3FF;"></i>
+                        <div>
+                            <strong>{{ channel.name }}</strong>
+                            <div class="small text-secondary">@{{ channel.username }}</div>
+                        </div>
+                        <div class="ms-auto">
+                            <span class="badge bg-secondary">{{ channel.subscribers|length }} подписчиков</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </a>
+        {% endfor %}
+        {% endif %}
+        
+        {% if recommended %}
+        <h5 class="mb-3 mt-4">Рекомендуемые каналы</h5>
+        {% for channel in recommended %}
+        <div class="card mb-2">
+            <div class="card-body">
+                <div class="d-flex align-items-center gap-3">
+                    <i class="fas fa-bullhorn fa-2x" style="color: #00A3FF;"></i>
+                    <div class="flex-grow-1">
+                        <strong>{{ channel.name }}</strong>
+                        <div class="small text-secondary">@{{ channel.username }}</div>
+                        <div class="small">{{ channel.description or 'Нет описания' }}</div>
+                    </div>
+                    <form method="POST" action="{{ url_for('subscribe_channel', channel_id=channel.id) }}">
+                        <button type="submit" class="btn btn-primary btn-sm">Подписаться</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+        {% endif %}
+        
+        {% if not my_channels and not subscribed_channels and not recommended %}
+        <div class="card text-center">
+            <div class="card-body py-5">
+                <i class="fas fa-bullhorn fa-3x text-secondary mb-3"></i>
+                <p class="mb-3">Здесь будут ваши каналы и подписки</p>
+                <a href="{{ url_for('create_channel') }}" class="btn btn-primary">Создать канал</a>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.hover-card {
+    transition: transform 0.2s;
+}
+.hover-card:hover {
+    transform: translateX(5px);
+}
+</style>
+{% endblock %}

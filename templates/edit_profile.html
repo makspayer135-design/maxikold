@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}Редактировать профиль | MAXиколд{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-6 mx-auto">
+        <div class="card">
+            <div class="card-body">
+                <h4 class="mb-4">Редактировать профиль</h4>
+                <form method="POST" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label class="form-label">Аватар</label>
+                        <input type="file" name="avatar" class="form-control" accept="image/*">
+                        <small class="text-secondary">Текущий: {{ current_user.avatar }}</small>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">О себе</label>
+                        <textarea name="bio" class="form-control" rows="5">{{ current_user.bio }}</textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                    <a href="{{ url_for('profile', username=current_user.username) }}" class="btn btn-outline">Отмена</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

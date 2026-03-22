@@ -1,0 +1,67 @@
+{% extends "base.html" %}
+
+{% block title %}{{ channel.name }} | MAXиколд{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 mx-auto">
+        <div class="card mb-4">
+            <div class="card-header d-flex align-items-center gap-3">
+                <a href="{{ url_for('channels') }}" class="btn btn-sm btn-outline">
+                    <i class="fas fa-arrow-left"></i>
+                </a>
+                <i class="fas fa-bullhorn fa-2x" style="color: #00A3FF;"></i>
+                <div class="flex-grow-1">
+                    <h5 class="mb-0">{{ channel.name }}</h5>
+                    <small class="text-secondary">@{{ channel.username }} • {{ subscribers }} подписчиков</small>
+                </div>
+                <form method="POST" action="{{ url_for('subscribe_channel', channel_id=channel.id) }}">
+                    {% if is_subscribed %}
+                    <button type="submit" class="btn btn-outline btn-sm">Отписаться</button>
+                    {% else %}
+                    <button type="submit" class="btn btn-primary btn-sm">Подписаться</button>
+                    {% endif %}
+                </form>
+            </div>
+            <div class="card-body">
+                <p>{{ channel.description or 'Нет описания' }}</p>
+            </div>
+        </div>
+        
+        {% if is_owner %}
+        <div class="card mb-4">
+            <div class="card-body">
+                <h5>Создать пост</h5>
+                <form method="POST" action="{{ url_for('create_channel_post', channel_id=channel.id) }}" enctype="multipart/form-data">
+                    <textarea class="form-control mb-2" name="content" rows="3" placeholder="Напишите что-нибудь..."></textarea>
+                    <div class="d-flex justify-content-between">
+                        <label class="btn btn-outline btn-sm">
+                            <i class="fas fa-image"></i> Медиа
+                            <input type="file" name="media" accept="image/*" style="display: none;" onchange="this.form.submit()">
+                        </label>
+                        <button type="submit" class="btn btn-primary btn-sm">Опубликовать</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+        
+        <h5 class="mb-3">Посты канала</h5>
+        {% for post in posts %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <div class="d-flex gap-2 mb-2">
+                    <i class="fas fa-user-circle"></i>
+                    <strong>{{ post.user.username }}</strong>
+                    <small class="text-secondary">{{ post.created_at.strftime('%d.%m.%Y %H:%M') }}</small>
+                </div>
+                <p>{{ post.content }}</p>
+                {% if post.media_url %}
+                <img src="{{ url_for('static', filename='uploads/' + post.media_url) }}" class="img-fluid rounded-3">
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}
